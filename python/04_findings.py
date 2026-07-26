@@ -48,7 +48,7 @@ tolerance (observed ~1e-13) before this is written.
 
 {frame.height} drafted college players, classes 2011-2022, outcome =
 2,000+ NBA minutes within three seasons of the draft (base rate
-{base:.0%}). Train: classes 2011-2018. Test: classes 2019-2022 — drafts the
+{base:.0%}). Train: classes 2011-2018. Test: classes 2019-2022, drafts the
 model never saw.
 
 ### The headline is a negative result, reported as one
@@ -60,7 +60,7 @@ model never saw.
 
 In sample, college production looks useful (+{m1['train_auc'] - m0['train_auc']:.3f}
 AUC). Out of sample the advantage is {m1['test_auc'] - m0['test_auc']:+.3f} AUC
-and log-loss actually degrades — the textbook signature of overfitting, shown
+and log-loss actually degrades: the textbook signature of overfitting, shown
 on real data. The draft pick is the scouting industry's aggregate forecast,
 and **on this outcome, at this sample size, box-score college production adds
 nothing the scouts had not already priced in.** That is the finding. A
@@ -70,16 +70,16 @@ holdout is the difference between that story and the truth.
 
 What it does NOT say: that college stats are useless (richer outcomes,
 bigger samples, or interactions may yet pay), or that scouting is
-unbeatable — public models like DARKO-derived draft work use far richer
-inputs. It says the cheap version of the claim fails honestly.
+unbeatable (public models like DARKO-derived draft work use far richer
+inputs). It says the cheap version of the claim fails honestly.
 
 ### What a draft slot is actually worth
 
 The pick-only curve is itself decision-relevant (see
 `figures/fig1_pick_curve_py.html`): P(rotation player) falls from
-{p1:.1%} at pick 1 (an extrapolation to the curve's edge — read it as
-"nearly certain") to a coin flip around pick {coin}, and keeps falling —
-draft capital is front-loaded exactly the way trade valuations assume.
+{p1:.1%} at pick 1 (an extrapolation to the curve's edge: read it as
+"nearly certain") to a coin flip around pick {coin}, and keeps falling.
+Draft capital is front-loaded exactly the way trade valuations assume.
 
 ### Calibration on unseen drafts (pick + college model)
 
@@ -89,8 +89,8 @@ draft capital is front-loaded exactly the way trade valuations assume.
 
 ### Where the model out-called the scouts (test classes)
 
-Largest positive residuals — players the model's inputs undervalued least
-badly versus where they went: {hits}. Individual residuals are anecdotes,
+Largest positive residuals (players the model's inputs undervalued least
+badly versus where they went): {hits}. Individual residuals are anecdotes,
 not evidence; they are listed because a front office will always ask.
 
 ### Honest limitations

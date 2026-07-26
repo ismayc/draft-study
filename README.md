@@ -7,8 +7,8 @@ predict NBA outcomes beyond what the pick already encodes?
 <!-- terms -->
 > **Terms used in this analysis.** Dotted-underlined terms anywhere below repeat these definitions on hover ([full glossary](https://github.com/ismayc/basketball-data-science/blob/main/docs/glossary.md)).
 >
-> - **IRLS** — Iteratively reweighted least squares - the standard algorithm for fitting a logistic regression.
-> - **AUC** — Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.
+> - **IRLS**: Iteratively reweighted least squares - the standard algorithm for fitting a logistic regression.
+> - **AUC**: Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.
 <!-- /terms -->
 
 ## Data
@@ -61,7 +61,7 @@ tolerance (observed ~1e-13) before this is written.
 
 567 drafted college players, classes 2011-2022, outcome =
 2,000+ NBA minutes within three seasons of the draft (base rate
-54%). Train: classes 2011-2018. Test: classes 2019-2022 — drafts the
+54%). Train: classes 2011-2018. Test: classes 2019-2022, drafts the
 model never saw.
 
 ### The headline is a negative result, reported as one
@@ -73,7 +73,7 @@ model never saw.
 
 In sample, college production looks useful (+0.017
 <abbr title="Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.">AUC</abbr>). Out of sample the advantage is +0.000 <abbr title="Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.">AUC</abbr>
-and log-loss actually degrades — the textbook signature of overfitting, shown
+and log-loss actually degrades: the textbook signature of overfitting, shown
 on real data. The draft pick is the scouting industry's aggregate forecast,
 and **on this outcome, at this sample size, box-score college production adds
 nothing the scouts had not already priced in.** That is the finding. A
@@ -83,16 +83,16 @@ holdout is the difference between that story and the truth.
 
 What it does NOT say: that college stats are useless (richer outcomes,
 bigger samples, or interactions may yet pay), or that scouting is
-unbeatable — public models like DARKO-derived draft work use far richer
-inputs. It says the cheap version of the claim fails honestly.
+unbeatable (public models like DARKO-derived draft work use far richer
+inputs). It says the cheap version of the claim fails honestly.
 
 ### What a draft slot is actually worth
 
 The pick-only curve is itself decision-relevant (see
 `figures/fig1_pick_curve_py.html`): P(rotation player) falls from
-99.9% at pick 1 (an extrapolation to the curve's edge — read it as
-"nearly certain") to a coin flip around pick 28, and keeps falling —
-draft capital is front-loaded exactly the way trade valuations assume.
+99.9% at pick 1 (an extrapolation to the curve's edge: read it as
+"nearly certain") to a coin flip around pick 28, and keeps falling.
+Draft capital is front-loaded exactly the way trade valuations assume.
 
 ### Calibration on unseen drafts (pick + college model)
 
@@ -106,8 +106,8 @@ draft capital is front-loaded exactly the way trade valuations assume.
 
 ### Where the model out-called the scouts (test classes)
 
-Largest positive residuals — players the model's inputs undervalued least
-badly versus where they went: Jabari Walker (pick 57, 3,069 min), Jalen McDaniels (pick 52, 2,092 min), Daniel Gafford (pick 38, 2,844 min), Isaiah Joe (pick 49, 2,388 min). Individual residuals are anecdotes,
+Largest positive residuals (players the model's inputs undervalued least
+badly versus where they went): Jabari Walker (pick 57, 3,069 min), Jalen McDaniels (pick 52, 2,092 min), Daniel Gafford (pick 38, 2,844 min), Isaiah Joe (pick 49, 2,388 min). Individual residuals are anecdotes,
 not evidence; they are listed because a front office will always ask.
 
 ### Honest limitations
