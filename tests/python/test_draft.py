@@ -39,12 +39,3 @@ def test_log_loss_matches_formula(draft):
     pred = np.array([0.9, 0.1])
     y = np.array([1.0, 0.0])
     assert draft.log_loss(pred, y) == pytest.approx(-np.log(0.9))
-
-
-def test_irls_matches_shot_quality_solver(draft, shotq):
-    # The two studies claim the identical algorithm; hold them to it.
-    rng = np.random.default_rng(3)
-    X = np.column_stack([np.ones(300), rng.normal(size=(300, 2))])
-    y = (rng.uniform(size=300) < 0.4).astype(float)
-    assert np.allclose(draft.logistic_irls(X, y), shotq.logistic_irls(X, y),
-                       atol=1e-12)

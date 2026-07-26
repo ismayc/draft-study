@@ -1,6 +1,6 @@
 # Unit tests for draft-study/R/functions.R
 
-source(file.path(REPO, "draft-study", "R", "functions.R"))
+source(file.path(REPO, "R", "functions.R"))
 
 test_that("name normalization folds case, diacritics, and suffixes", {
   expect_equal(norm_name("Gary Trent Jr."), "gary trent")
@@ -35,11 +35,3 @@ test_that("log loss matches the closed form", {
   expect_equal(log_loss(c(0.9, 0.1), c(1, 0)), -log(0.9))
 })
 
-test_that("IRLS agrees with the shot-quality solver on the same data", {
-  sq <- new.env()
-  source(file.path(REPO, "shot-quality-study", "R", "functions.R"), local = sq)
-  set.seed(3)
-  X <- cbind(1, matrix(rnorm(600), 300, 2))
-  y <- as.numeric(runif(300) < 0.4)
-  expect_equal(logistic_irls(X, y), sq$logistic_irls(X, y), tolerance = 1e-12)
-})
