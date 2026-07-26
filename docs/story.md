@@ -38,8 +38,8 @@ Two readings of the curve do real work in front-office arguments. First,
 its steepness at the top says the difference between pick 3 and pick 12 is
 enormous. Consensus is *informative*, which is exactly why beating it is
 hard. Second, the coin-flip crossing near the back of the first round says
-late-first-round certainty is an illusion; a team trading up at pick 27
-"because our model loves him" is paying a premium for a coin toss unless
+late-first-round certainty is an illusion. A team trading up at pick 27
+"because our model loves him" is paying a premium for a coin toss, unless
 its information is genuinely private.
 
 That is the study's actual thesis, and it is a decision-making principle
