@@ -5,7 +5,7 @@ forecast. Given a player's final college season, does box-score production
 predict NBA outcomes beyond what the pick already encodes?
 
 <!-- terms -->
-> **Terms used in this analysis.** Dotted-underlined terms anywhere below repeat these definitions on hover ([full glossary](../docs/glossary.md)).
+> **Terms used in this analysis.** Dotted-underlined terms anywhere below repeat these definitions on hover ([full glossary](https://github.com/ismayc/basketball-data-science/blob/main/docs/glossary.md)).
 >
 > - **IRLS** — Iteratively reweighted least squares - the standard algorithm for fitting a logistic regression.
 > - **AUC** — Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.
@@ -31,7 +31,7 @@ Mo Bamba, Bones Hyland, ...).
 - Models: logistic `M0: log(pick)` vs `M1: log(pick) + 15 college features`
   (age, height, OBPM/DBPM, usage, TS%, rebound/assist/turnover/stock rates,
   3PA volume, FT rate, class), fit by the same hand-rolled <abbr title="Iteratively reweighted least squares - the standard algorithm for fitting a logistic regression.">IRLS</abbr> as
-  `../shot-quality-study`, mirrored in R.
+  [shot-quality-study](https://github.com/ismayc/shot-quality-study), mirrored in R.
 - **Era-based holdout**: train on classes 2011-2018, evaluate on 2019-2022.
   Random splits leak era effects; time splits are how a front office would
   actually use the model.
