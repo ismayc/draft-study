@@ -97,6 +97,9 @@ quintile_calibration(m1$pred_test, m1$y_test) |>
 # ggplot mirror of the pick curve
 picks <- 1:60
 curve <- predict_prob(cbind(1, log(picks)), m0$beta)
+gap <- abs(curve - 0.5)
+tibble(pick = picks, p_rotation = curve, coin_flip = as.integer(gap == min(gap))) |>
+  readr::write_csv(file.path(out, "pick_curve_r.csv"))
 ggplot(tibble(pick = picks, p = curve), aes(pick, p)) +
   geom_line(colour = "#1E3A5F", linewidth = 1) +
   labs(title = "What a draft slot is worth: P(2,000+ min in 3 seasons) by pick",

@@ -289,6 +289,11 @@ def main() -> int:
     import plotly.graph_objects as go
     picks = np.arange(1, 61, dtype=float)
     curve = predict(np.column_stack([np.ones(60), np.log(picks)]), m0["beta"])
+    # The curve as a committed table, so the prose's pick-1 value and
+    # coin-flip pick are bound to cells rather than recomputed for a figure.
+    gap = np.abs(curve - 0.5)
+    pl.DataFrame({"pick": picks.astype(int), "p_rotation": curve,
+                  "coin_flip": (gap == gap.min()).astype(int)}).write_csv(OUT / "pick_curve.csv")
     f = go.Figure()
     f.add_trace(go.Scatter(x=picks, y=curve, mode="lines",
                            name="P(rotation) from pick alone"))

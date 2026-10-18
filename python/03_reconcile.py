@@ -25,6 +25,7 @@ TABLES = [
      ["train_auc", "test_auc", "train_logloss", "test_logloss"]),
     ("calibration_test.csv", "calibration_test_r.csv", ["quintile"],
      ["n", "mean_pred", "actual"]),
+    ("pick_curve.csv", "pick_curve_r.csv", ["pick"], ["p_rotation", "coin_flip"]),
 ]
 
 

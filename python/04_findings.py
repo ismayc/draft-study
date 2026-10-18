@@ -28,12 +28,9 @@ def build() -> str:
                      f"{r['min3']:,.0f} min)"
                      for r in beat.head(4).iter_rows(named=True))
 
-    import numpy as np
-    b0 = pl.read_csv(OUT / "coefficients_m0.csv")["coef"].to_numpy()
-    picks = np.arange(1, 61)
-    curve = 1 / (1 + np.exp(-(b0[0] + b0[1] * np.log(picks))))
-    p1 = curve[0]
-    coin = int(picks[np.argmin(np.abs(curve - 0.5))])
+    curve = pl.read_csv(OUT / "pick_curve.csv")
+    p1 = float(curve.filter(pl.col("pick") == 1)["p_rotation"][0])
+    coin = int(curve.filter(pl.col("coin_flip") == 1)["pick"][0])
     cal_rows = "\n".join(
         f"| {r['quintile']} | {r['n']} | {r['mean_pred']:.2f} | {r['actual']:.2f} |"
         for r in cal.iter_rows(named=True))
