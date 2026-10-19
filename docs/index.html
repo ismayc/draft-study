@@ -161,6 +161,21 @@ details.terms summary { padding: .55rem .9rem; cursor: pointer;
   color: var(--ink-2); font-weight: 600; }
 details.terms ul { margin: 0; padding: .2rem 1.4rem .8rem; }
 details.terms li { margin: .3rem 0; color: var(--ink-2); }
+/* sticky section nav (study pages): the masthead scrolls away, this stays */
+.sectionnav { position: sticky; top: 0; z-index: 30; background: var(--surface);
+  border-bottom: 1px solid var(--rule); }
+.sectionnav .inner { width: min(1200px, 94vw); margin: 0 auto; display: flex;
+  gap: 1.3rem; overflow-x: auto; white-space: nowrap; scrollbar-width: none;
+  padding: .55rem 0 .45rem; }
+.sectionnav .inner::-webkit-scrollbar { display: none; }
+.sectionnav a { font-family: "Barlow Condensed", system-ui, sans-serif;
+  font-weight: 500; font-size: .95rem; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-3); text-decoration: none;
+  padding-bottom: .15rem; border-bottom: 2px solid transparent; }
+.sectionnav a:hover { color: var(--ink); }
+.sectionnav a[aria-current="true"] { color: var(--accent-ink);
+  border-bottom-color: var(--accent); }
+main [id] { scroll-margin-top: 3.6rem; }
 /* hub cards */
 .cards { display: grid; grid-template-columns:
   repeat(auto-fit, minmax(290px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
@@ -209,6 +224,7 @@ html.reveal .is-in { opacity: 1; transform: none; }
   <a href="https://github.com/ismayc/draft-study">Code on GitHub</a>
   <button class="themebtn" type="button" aria-label="Toggle color theme">◐</button>
 </div></header>
+<nav class="sectionnav" aria-label="Sections"><div class="inner"><a href="#the-design">The design</a><a href="#the-result">The result</a><a href="#the-byproduct">The byproduct</a><a href="#reading-the-curve">Reading the curve</a><a href="#the-lesson">The lesson</a><a href="#method-code-and-verification">Method</a></div></nav>
 <main>
 <div class="eyebrow">56,781 college player-seasons</div>
 <h1>The scouts already priced it in: a draft model whose finding is "nothing"</h1>
@@ -235,7 +251,7 @@ thousands of scout-hours. Beating it is the bar.</p>
 <div class="sub">Drafted college players, 2011&ndash;2022, every historical mismatch hand-audited.</div></div>
 </div>
 
-<div class="eyebrow beat">The design</div>
+<div class="eyebrow beat" id="the-design">The design</div>
 
 <h2>An era holdout keeps the model from peeking</h2>
 <p>The design is built to make the answer trustworthy rather than flattering.
@@ -246,7 +262,7 @@ is concrete: a real rotation (2,000+ NBA minutes within three seasons).
 And the holdout is <strong>by era</strong> (train on the 2011–2018 classes, test on
 2019–2022), because a random split would let the model peek at the era it
 claims to predict, which is exactly how draft models flatter themselves.</p>
-<div class="eyebrow beat">The result</div>
+<div class="eyebrow beat" id="the-result">The result</div>
 
 <h2>The college numbers add +0.000</h2>
 <p>The result: a model using only the pick predicts rotation outcomes at
@@ -256,7 +272,7 @@ to 0.827. <strong>The college numbers add +0.000.</strong> In-sample they help (
 0.861), which is precisely the trap: a random-split evaluation would have
 reported that in-sample flattery as skill. Out of era, the scouts' consensus
 already contains everything the box score knows.</p>
-<div class="eyebrow beat">The byproduct</div>
+<div class="eyebrow beat" id="the-byproduct">The byproduct</div>
 
 <h2>The negative result pays for a pick-value curve</h2>
 <p>A negative result is only useful if it is stated as one, so this study
@@ -266,7 +282,7 @@ byproduct, though, is genuinely useful, because modeling P(rotation) as a
 function of the pick produces the empirical pick-value curve every trade
 conversation needs.</p>
 <figure class="figure-card"><iframe src="figures/fig1_pick_curve_py.html" loading="lazy" style="height:516px" title="Pick curve"></iframe><figcaption>P(NBA rotation player within three seasons) by draft pick: the study's one essential figure. It converts a negative modeling result into a usable asset-valuation tool: the curve is steep at the top, crosses a coin flip around pick 28, and flattens into the second round. When a trade offer bundles picks, this curve is the exchange rate; hover any pick for its empirical rate and sample size.</figcaption></figure>
-<div class="eyebrow beat">Reading the curve</div>
+<div class="eyebrow beat" id="reading-the-curve">Reading the curve</div>
 
 <h2>Late-first-round certainty is a coin toss</h2>
 <p>Two readings of the curve do real work in front-office arguments. First,
@@ -276,7 +292,7 @@ hard. Second, the coin-flip crossing near the back of the first round says
 late-first-round certainty is an illusion. A team trading up at pick 27
 "because our model loves him" is paying a premium for a coin toss, unless
 its information is genuinely private.</p>
-<div class="eyebrow beat">The lesson</div>
+<div class="eyebrow beat" id="the-lesson">The lesson</div>
 
 <h2>An edge has to come from information the consensus doesn't hold</h2>
 <p>That is the study's actual thesis, and it is a decision-making principle
@@ -289,7 +305,7 @@ discipline as the rest of the family applies (dual R/Python
 implementation reconciled to ~1e-13, with the era holdout wired into the
 gates), because a negative result you cannot trust is worth nothing at
 all.</p>
-<h2>Method, code, and verification</h2><p>The full technical write-up (data provenance, model specification, validation gates, and stated limitations) is the <a href="https://github.com/ismayc/draft-study#readme">README</a>. The analysis is implemented independently in R and Python and reconciled to numeric tolerance; <code>run_checks.sh</code> replays every gate.</p>
+<h2 id="method-code-and-verification">Method, code, and verification</h2><p>The full technical write-up (data provenance, model specification, validation gates, and stated limitations) is the <a href="https://github.com/ismayc/draft-study#readme">README</a>. The analysis is implemented independently in R and Python and reconciled to numeric tolerance; <code>run_checks.sh</code> replays every gate.</p>
 </main>
 <footer>Public data · dual-implementation reconciled · every gate scripted ·
 <a href="https://github.com/ismayc/basketball-data-science">the family on GitHub</a></footer>
@@ -347,6 +363,46 @@ all.</p>
   }, {threshold: 0.08, rootMargin: "0px 0px -6% 0px"});
   Array.prototype.forEach.call(els, function (el) { io.observe(el); });
   window.__revealReady = true;
+})();
+</script>
+<script>
+(function () {
+  var nav = document.querySelector(".sectionnav");
+  if (!nav) { return; }
+  var links = Array.prototype.slice.call(nav.querySelectorAll("a"));
+  var row = nav.querySelector(".inner");
+  var targets = links.map(function (a) {
+    return document.getElementById(a.getAttribute("href").slice(1));
+  });
+  var last = null;
+  function update() {
+    var edge = nav.getBoundingClientRect().bottom + 24, cur = -1;
+    targets.forEach(function (t, i) {
+      if (t && t.getBoundingClientRect().top <= edge) { cur = i; }
+    });
+    // At the foot of the page the last sections are too short to reach the
+    // bar, so the final one counts as current there.
+    var de = document.documentElement;
+    if (window.scrollY + window.innerHeight >= de.scrollHeight - 2) { cur = targets.length - 1; }
+    if (cur === last) { return; }
+    last = cur;
+    links.forEach(function (a, i) {
+      if (i === cur) { a.setAttribute("aria-current", "true"); }
+      else { a.removeAttribute("aria-current"); }
+    });
+    var a = links[cur];
+    if (a && row) {
+      var l = a.offsetLeft, r = l + a.offsetWidth;
+      if (l < row.scrollLeft || r > row.scrollLeft + row.clientWidth) {
+        row.scrollLeft = Math.max(0, l - 16);
+      }
+    }
+  }
+  // Straight from the event, not via requestAnimationFrame, which stalls in
+  // background tabs and offscreen frames; eight rect reads per scroll is cheap.
+  window.addEventListener("scroll", update, {passive: true});
+  window.addEventListener("resize", update);
+  update();
 })();
 </script>
 </body>
