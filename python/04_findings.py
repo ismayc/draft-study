@@ -16,6 +16,12 @@ README = ROOT / "README.md"
 MARKER = "## Findings"
 
 
+def signed3(x: float) -> str:
+    """3-decimal signed number; a value that rounds to zero prints '0.000',
+    never '-0.000' or '+0.000'."""
+    return "0.000" if round(x, 3) == 0 else f"{x:+.3f}"
+
+
 def build() -> str:
     metrics = pl.read_csv(OUT / "metrics.csv")
     m0 = metrics.filter(pl.col("model") == "pick_only").row(0, named=True)
@@ -29,6 +35,10 @@ def build() -> str:
     hits = ", ".join(f"{r['player_name']} (pick {r['OVERALL_PICK']}, "
                      f"{r['min3']:,.0f} min)"
                      for r in beat.head(4).iter_rows(named=True))
+
+    allow = pl.read_csv(ROOT / "data" / "draft_join_allowlist.csv",
+                        infer_schema_length=0)
+    n_allow = allow.filter(pl.col("kind") == "unmatched").height
 
     curve = pl.read_csv(OUT / "pick_curve.csv")
     p1 = float(curve.filter(pl.col("pick") == 1)["p_rotation"][0])
@@ -58,7 +68,7 @@ model never saw.
 | pick + college stats | {m1['train_auc']:.3f} | {m1['test_auc']:.3f} | {m1['train_logloss']:.3f} | {m1['test_logloss']:.3f} |
 
 In sample, college production looks useful (+{m1['train_auc'] - m0['train_auc']:.3f}
-AUC). Out of sample the advantage is {m1['test_auc'] - m0['test_auc']:+.3f} AUC
+AUC). Out of sample the advantage is {signed3(m1['test_auc'] - m0['test_auc'])} AUC
 and log-loss actually degrades: the textbook signature of overfitting, shown
 on real data. The draft pick is the scouting industry's aggregate forecast,
 and **on this outcome, at this sample size, box-score college production adds
@@ -97,10 +107,13 @@ not evidence; they are listed because a front office will always ask.
 - Binary outcome and a blunt one; minutes confound opportunity with merit.
 - College-only: international and G-League-Ignite paths are out of frame,
   and two lottery picks (Sharpe, Kanter) never logged a college minute.
-- 567 players is small; the negative result is about THIS feature set at
+- {frame.height} players is small; the negative result is about THIS feature set at
   THIS sample size, not a theorem about college data.
-- Name matching is gated (98.8% draft-year agreement; every mismatch was
-  audited by hand into an explicit alias table in the code).
+- Name matching is gated (98.8% draft-year agreement). Every mismatch is in
+  a committed alias table (`data/draft_name_aliases.csv`) or, for the {n_allow}
+  college draftees who cannot match, an allowlist with a reason each
+  (`data/draft_join_allowlist.csv`); `python/05_join_gate.py` fails on any
+  other unmatched draftee.
 """
 
 

@@ -11,20 +11,30 @@ FEATURES <- c("log_pick", "age", "ht_in", "obpm", "dbpm", "usg", "ts_per",
               "orb_per", "drb_per", "ast_per", "to_per", "blk_per", "stl_per",
               "three_a_pg", "ftr", "class_num")
 
-# Same audited alias table as the Python side (normalized form).
-NICKNAME_ALIASES <- c(
-  "roy devyn marble" = "devyn marble",
-  "joseph young" = "joe young",
-  "moe harkless" = "maurice harkless",
-  "wesley iwundu" = "wes iwundu",
-  "kahlil felder" = "kay felder",
-  "sviatoslav mykhailiuk" = "svi mykhailiuk",
-  "dewan huell" = "dewan hernandez",
-  "edrice adebayo" = "bam adebayo",
-  "mohamed bamba" = "mo bamba",
-  "nicolas claxton" = "nic claxton",
-  "nahshon hyland" = "bones hyland",
-  "cameron thomas" = "cam thomas")
+# Same committed alias table as the Python side (data/draft_name_aliases.csv,
+# normalized names, one reason per row). A row with a torvik_year also admits
+# that one Torvik (name, year) row despite a blank pick column.
+# Resolved from this file's own location (source() records it as `ofile`),
+# so sourcing from another repo, as basketball-analysis-tools' cross-study
+# test does, still finds draft-study's table; `root` or `REPO` is the
+# fallback when the file is not sourced from disk.
+.this_dir <- local({
+  d <- NULL
+  for (i in rev(seq_len(sys.nframe()))) {
+    f <- sys.frame(i)$ofile
+    if (!is.null(f)) { d <- dirname(normalizePath(f)); break }
+  }
+  d
+})
+.repo_root <- function() {
+  if (!is.null(.this_dir)) dirname(.this_dir) else if (exists("root")) root else REPO
+}
+.alias_tbl <- readr::read_csv(
+  file.path(.repo_root(), "data", "draft_name_aliases.csv"),
+  col_types = readr::cols(.default = "c"))
+NICKNAME_ALIASES <- setNames(.alias_tbl$dh_name_n, .alias_tbl$torvik_name_n)
+ADMIT_BLANK_PICK <- with(.alias_tbl[!is.na(.alias_tbl$torvik_year), ],
+                         paste(torvik_name_n, torvik_year, sep = "|"))
 
 #' Fold case/diacritics, drop punctuation and generational suffixes.
 norm_name <- function(name) {

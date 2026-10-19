@@ -1,0 +1,11 @@
+person_id,player_name,season,overall_pick,kind,reason
+202683,Enes Freedom,2011,3,unmatched,DraftHistory lists the name Enes Freedom (Enes Kanter's later legal name) at Kentucky; he never played a college game (outside fact; Torvik has no Kentucky row for him in any year)
+203129,Tornike Shengelia,2012,54,unmatched,DraftHistory ORGANIZATION is "Georgia" (the country) but is typed College/University; he came from European clubs and Torvik has only an unrelated Levan Shengelia
+203318,Glen Rice,2013,35,unmatched,Torvik's last Glen Rice row is year 2012 (Georgia Tech) with pick 35 but DraftHistory season is 2013; no Torvik row exists for 2013 so the year==SEASON rule drops him (that he played elsewhere in 2012-13 is from memory and unverified)
+203495,Ricky Ledo,2013,43,unmatched,Providence is listed but Torvik has no Ricky Ledo row in any year; he did not play for Providence (outside fact)
+1629001,De'Anthony Melton,2018,46,unmatched,Torvik's only Melton row is year 2017 (USC) with pick 46 but DraftHistory season is 2018; no 2018 Torvik row exists so the year==SEASON rule drops him (that he sat out 2017-18 is from memory and unverified)
+1629608,Dewan Hernandez,2019,59,unmatched,Torvik has him as Dewan Huell with last row year 2018 (pick 59) but DraftHistory season is 2019; no 2019 Torvik row exists (alias huell -> hernandez is correct but the year rule drops him)
+1630206,Jay Scrubb,2020,55,unmatched,John A. Logan is a junior college; Torvik covers Division I only and has no row for him
+1630586,Usman Garuba,2021,23,unmatched,DraftHistory ORGANIZATION is "Madrid (ESP)" but is typed College/University; he never played college basketball and Torvik has no row
+1631101,Shaedon Sharpe,2022,7,unmatched,Enrolled at Kentucky but never played a college minute; Torvik has no row for him
+1631120,JD Davison,2022,53,pick_mismatch,Torvik's pick column says 54 but DraftHistory has 53 (and 54 belongs to Yannick Nzosa); the model takes the pick from DraftHistory so the model value is already 53; Torvik's pick column is used only to filter to drafted players

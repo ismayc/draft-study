@@ -21,12 +21,21 @@ predict NBA outcomes beyond what the pick already encodes?
 
 NBA minutes join by **ID**, not name; the one name join in the study
 (Torvik ↔ DraftHistory) is gated at 98%+ with every historical mismatch
-audited into an explicit nickname/name-change alias table (Bam Adebayo,
-Mo Bamba, Bones Hyland, ...).
+audited into a committed alias table (`data/draft_name_aliases.csv`, a
+reason per row: Bam Adebayo, Mo Bamba, Bones Hyland, ...). A college
+draftee who cannot match is listed with a reason in
+`data/draft_join_allowlist.csv`, and `python/05_join_gate.py` fails on any
+other unmatched 2011-2022 college draftee (the inner join used to drop them
+silently).
 
 ## Design
 
-- Sample: drafted players whose final college season is 2011-2022 (n=567).
+Note, October 19, 2026: the join audit recovered two college draftees the
+name join had silently dropped (Trey Thompkins and Balsa Koprivica, whose
+Torvik pick column is blank), so n rose from 567 to 569 and the model
+figures below shifted in the third decimal.
+
+- Sample: drafted players whose final college season is 2011-2022 (n=569).
 - Outcome: ≥2,000 NBA minutes within three seasons of the draft.
 - Models: logistic `M0: log(pick)` vs `M1: log(pick) + 15 college features`
   (age, height, OBPM/DBPM, usage, TS%, rebound/assist/turnover/stock rates,
@@ -44,6 +53,7 @@ python/02_model.py       joins, features, both models, metrics, gates
 R/02_model.R             independent R/tidyverse implementation (full rebuild)
 python/03_reconcile.py   R vs Python to 1e-6 (observed ~1e-13), non-zero exit
 python/04_findings.py    regenerates the Findings section below
+python/05_join_gate.py   fails on any unmatched, un-allowlisted college draftee
 ```
 
 Validation gates (`output/validation.csv`): draft-year inference agrees
@@ -59,7 +69,7 @@ tolerance (observed ~1e-13) before this is written.
 
 ### The setup
 
-567 drafted college players, classes 2011-2022, outcome =
+569 drafted college players, classes 2011-2022, outcome =
 2,000+ NBA minutes within three seasons of the draft (base rate
 54%). Train: classes 2011-2018. Test: classes 2019-2022, drafts the
 model never saw.
@@ -68,11 +78,11 @@ model never saw.
 
 | model | train <abbr title="Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.">AUC</abbr> | test <abbr title="Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.">AUC</abbr> | train log-loss | test log-loss |
 |---|---|---|---|---|
-| pick only | 0.844 | 0.827 | 0.497 | 0.528 |
-| pick + college stats | 0.861 | 0.827 | 0.470 | 0.538 |
+| pick only | 0.844 | 0.829 | 0.497 | 0.527 |
+| pick + college stats | 0.862 | 0.829 | 0.469 | 0.537 |
 
-In sample, college production looks useful (+0.017
-<abbr title="Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.">AUC</abbr>). Out of sample the advantage is +0.000 <abbr title="Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.">AUC</abbr>
+In sample, college production looks useful (+0.018
+<abbr title="Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.">AUC</abbr>). Out of sample the advantage is 0.000 <abbr title="Area under the ROC curve: the probability the model ranks a random positive case above a random negative one. 0.5 is a coin flip.">AUC</abbr>
 and log-loss actually degrades: the textbook signature of overfitting, shown
 on real data. The draft pick is the scouting industry's aggregate forecast,
 and **on this outcome, at this sample size, box-score college production adds
@@ -99,8 +109,8 @@ Draft capital is front-loaded exactly the way trade valuations assume.
 | quintile | n | mean predicted | actual |
 |---|---|---|---|
 | 1 | 39 | 0.12 | 0.18 |
-| 2 | 38 | 0.25 | 0.29 |
-| 3 | 38 | 0.43 | 0.61 |
+| 2 | 38 | 0.24 | 0.29 |
+| 3 | 39 | 0.42 | 0.59 |
 | 4 | 38 | 0.72 | 0.82 |
 | 5 | 38 | 0.96 | 0.87 |
 
@@ -115,7 +125,10 @@ not evidence; they are listed because a front office will always ask.
 - Binary outcome and a blunt one; minutes confound opportunity with merit.
 - College-only: international and G-League-Ignite paths are out of frame,
   and two lottery picks (Sharpe, Kanter) never logged a college minute.
-- 567 players is small; the negative result is about THIS feature set at
+- 569 players is small; the negative result is about THIS feature set at
   THIS sample size, not a theorem about college data.
-- Name matching is gated (98.8% draft-year agreement; every mismatch was
-  audited by hand into an explicit alias table in the code).
+- Name matching is gated (98.8% draft-year agreement). Every mismatch is in
+  a committed alias table (`data/draft_name_aliases.csv`) or, for the 9
+  college draftees who cannot match, an allowlist with a reason each
+  (`data/draft_join_allowlist.csv`); `python/05_join_gate.py` fails on any
+  other unmatched draftee.

@@ -12,13 +12,16 @@ tv <- readr::read_csv(file.path(root, "data", "torvik_2011_2022.csv"),
                       col_types = readr::cols(.default = "c"))
 
 final <- tv |>
-  filter(pick != "", !is.na(pick)) |>
-  mutate(year = as.integer(year)) |>
+  mutate(year = as.integer(year), raw_n = norm_name(player_name)) |>
+  # Torvik's pick column filters to drafted players; the alias table admits
+  # the few drafted players whose pick is blank, by (name, year).
+  filter((pick != "" & !is.na(pick)) |
+           paste(raw_n, year, sep = "|") %in% ADMIT_BLANK_PICK) |>
   arrange(year) |>
   group_by(pid) |>
   slice_tail(n = 1) |>
   ungroup() |>
-  mutate(name_n = apply_aliases(norm_name(player_name)))
+  mutate(name_n = apply_aliases(raw_n))
 
 dh <- readr::read_csv(file.path(root, "data", "draft_history.csv"),
                       show_col_types = FALSE) |>

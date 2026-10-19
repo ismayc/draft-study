@@ -40,23 +40,26 @@ FEATURES = ["log_pick", "age", "ht_in", "obpm", "dbpm", "usg", "ts_per",
             "three_a_pg", "ftr", "class_num"]
 
 # Torvik registers formal names; the NBA registers the name the player goes
-# by. Every drafted-2011-2022 mismatch was audited by hand; keys/values are
-# in normalized (norm_name) form. Two lottery picks match nothing on
-# purpose: Shaedon Sharpe and Enes Kanter never played a college minute.
-NICKNAME_ALIASES = {
-    "roy devyn marble": "devyn marble",
-    "joseph young": "joe young",
-    "moe harkless": "maurice harkless",
-    "wesley iwundu": "wes iwundu",
-    "kahlil felder": "kay felder",
-    "sviatoslav mykhailiuk": "svi mykhailiuk",
-    "dewan huell": "dewan hernandez",
-    "edrice adebayo": "bam adebayo",
-    "mohamed bamba": "mo bamba",
-    "nicolas claxton": "nic claxton",
-    "nahshon hyland": "bones hyland",
-    "cameron thomas": "cam thomas",
-}
+# by. The alias table is a committed CSV shared with R/02_model.R, one reason
+# per row (names in normalized norm_name form). A row with a torvik_year also
+# admits that one Torvik (name, year) row despite a blank pick column.
+# Draftees who match nothing on purpose are in draft_join_allowlist.csv, and
+# 05_join_gate.py fails on any other unmatched 2011-2022 college draftee.
+ALIAS_FILE = DATA / "draft_name_aliases.csv"
+ALLOWLIST_FILE = DATA / "draft_join_allowlist.csv"
+
+
+def load_aliases() -> tuple[dict[str, str], set[str]]:
+    """(torvik name -> draft-history name, {'name|year' keys admitted with a
+    blank pick})."""
+    t = pl.read_csv(ALIAS_FILE, infer_schema_length=0)
+    aliases = dict(zip(t["torvik_name_n"], t["dh_name_n"]))
+    admit = {f"{n}|{y}" for n, y in zip(t["torvik_name_n"], t["torvik_year"])
+             if y}
+    return aliases, admit
+
+
+NICKNAME_ALIASES, ADMIT_BLANK_PICK = load_aliases()
 
 
 def norm_name(name: str) -> str:
@@ -139,19 +142,24 @@ def quintile_calibration(pred: np.ndarray, y: np.ndarray) -> pl.DataFrame:
             .sort("quintile"))
 
 
-def build_dataset() -> tuple[pl.DataFrame, dict[str, float]]:
-    """Join Torvik final college seasons to draft picks to NBA minutes;
-    returns the modeling frame plus the match diagnostics the gates use."""
+def match_draftees() -> dict:
+    """Join Torvik final college seasons to DraftHistory by normalized name.
+    Returns the frames the gate and build_dataset share: `college` (every
+    2011-2022 college draftee), `by_name`, `joined`, and `final`."""
     tv = pl.read_csv(DATA / "torvik_2011_2022.csv", infer_schema_length=0)
-    picked = (tv.filter(pl.col("pick") != "")
-              .with_columns(pl.col("year").cast(pl.Int64),
-                            pl.col("pick").cast(pl.Int64)))
+    tv = tv.with_columns(
+        pl.col("year").cast(pl.Int64),
+        raw_n=pl.col("player_name").map_elements(norm_name,
+                                                 return_dtype=pl.String))
+    # Torvik's pick column filters to drafted players; a few drafted players
+    # have it blank, and the alias table admits those rows by (name, year).
+    admit = (pl.col("raw_n") + "|" + pl.col("year").cast(pl.String)
+             ).is_in(sorted(ADMIT_BLANK_PICK))
+    picked = (tv.filter((pl.col("pick") != "") | admit)
+              .with_columns(pick=pl.col("pick").cast(pl.Int64, strict=False)))
     final = (picked.sort("year")
              .group_by("pid", maintain_order=True).last()
-             .with_columns(name_n=pl.col("player_name")
-                           .map_elements(norm_name, return_dtype=pl.String))
-             .with_columns(name_n=pl.col("name_n")
-                           .replace(NICKNAME_ALIASES)))
+             .with_columns(name_n=pl.col("raw_n").replace(NICKNAME_ALIASES)))
 
     dh = (pl.read_csv(DATA / "draft_history.csv")
           .filter(pl.col("SEASON").is_between(2011, 2022))
@@ -167,6 +175,16 @@ def build_dataset() -> tuple[pl.DataFrame, dict[str, float]]:
     # 2023+ draftees never reach by_name: their draft record is outside the
     # 2011-2022 window.)
     joined = by_name.filter(pl.col("year") == pl.col("SEASON"))
+    return {"final": final, "dh": dh, "college": college,
+            "by_name": by_name, "joined": joined}
+
+
+def build_dataset() -> tuple[pl.DataFrame, dict[str, float]]:
+    """Join Torvik final college seasons to draft picks to NBA minutes;
+    returns the modeling frame plus the match diagnostics the gates use."""
+    m = match_draftees()
+    final, college = m["final"], m["college"]
+    by_name, joined = m["by_name"], m["joined"]
 
     year_agree = joined.height / by_name.height
     lottery = college.filter(pl.col("OVERALL_PICK") <= 14)

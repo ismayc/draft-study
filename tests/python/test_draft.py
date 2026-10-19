@@ -39,3 +39,37 @@ def test_log_loss_matches_formula(draft):
     pred = np.array([0.9, 0.1])
     y = np.array([1.0, 0.0])
     assert draft.log_loss(pred, y) == pytest.approx(-np.log(0.9))
+
+
+def test_join_gate_passes_on_committed_tables(draft):
+    gate = draft_gate()
+    assert gate.audit(draft) == []
+
+
+def test_join_gate_fails_when_allowlist_row_removed(draft):
+    import polars as pl
+    gate = draft_gate()
+    allow = pl.read_csv(draft.ALLOWLIST_FILE, infer_schema_length=0)
+    problems = gate.audit(draft, allow.filter(pl.col("player_name") != "Usman Garuba"))
+    assert any("Usman Garuba" in p and "UNMATCHED" in p for p in problems)
+
+
+def test_join_gate_flags_stale_allowlist_row(draft):
+    import polars as pl
+    gate = draft_gate()
+    allow = pl.read_csv(draft.ALLOWLIST_FILE, infer_schema_length=0)
+    extra = pl.DataFrame({"person_id": ["202717"], "player_name": ["Trey Thompkins"],
+                          "season": ["2011"], "overall_pick": ["37"],
+                          "kind": ["unmatched"], "reason": ["x"]})
+    problems = gate.audit(draft, pl.concat([allow, extra]))
+    assert any("STALE" in p and "202717" in p for p in problems)
+
+
+def test_recovered_draftees_are_in_the_join(draft):
+    names = set(draft.match_draftees()["joined"]["player_name"])
+    assert {"Howard Thompkins III", "Balsa Koprivica"} <= names
+
+
+def draft_gate():
+    from conftest import load_script
+    return load_script("python/05_join_gate.py", "draft_join_gate")

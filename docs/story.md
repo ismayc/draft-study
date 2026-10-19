@@ -10,17 +10,17 @@ thousands of scout-hours. Beating it is the bar.
 
 <div class="tiles">
 <div class="tile"><div class="label">What college stats add</div>
-<div class="value">+0.000<small> AUC</small></div>
+<div class="value">0.000<small> AUC</small></div>
 <div class="sub">Fifteen box-score features move the out-of-sample test AUC not at all.</div></div>
 <div class="tile"><div class="label">The pick alone</div>
-<div class="value">0.827<small> AUC</small></div>
+<div class="value">0.829<small> AUC</small></div>
 <div class="sub">Out-of-era prediction of rotation outcomes from draft position only.</div></div>
 <div class="tile"><div class="label">In-sample flattery</div>
-<div class="value">0.844 &rarr; 0.861</div>
+<div class="value">0.844 &rarr; 0.862</div>
 <div class="sub">The gain a random split would have reported as skill.</div></div>
 <div class="tile"><div class="label">Sample</div>
-<div class="value">567</div>
-<div class="sub">Drafted college players, 2011&ndash;2022, every historical mismatch hand-audited.</div></div>
+<div class="value">569</div>
+<div class="sub">Drafted college players, 2011&ndash;2022, every historical mismatch in a committed alias table or allowlist.</div></div>
 </div>
 
 <div class="eyebrow beat">The design</div>
@@ -28,23 +28,30 @@ thousands of scout-hours. Beating it is the bar.
 ## An era holdout keeps the model from peeking
 
 The design is built to make the answer trustworthy rather than flattering.
-567 drafted college players (2011–2022) from Barttorvik's advanced-stats
+569 drafted college players (2011–2022) from Barttorvik's advanced-stats
 archive, joined to NBA outcomes by player ID, with the study's one name
-join gated at 98% and every historical mismatch hand-audited. The outcome
-is concrete: a real rotation (2,000+ NBA minutes within three seasons).
-And the holdout is **by era** (train on the 2011–2018 classes, test on
-2019–2022), because a random split would let the model peek at the era it
-claims to predict, which is exactly how draft models flatter themselves.
+join gated at 98% and every historical mismatch in a committed alias table
+or allowlist. The outcome is concrete: a real rotation (2,000+ NBA minutes
+within three seasons). And the holdout is **by era** (train on the
+2011–2018 classes, test on 2019–2022), because a random split would let the
+model peek at the era it claims to predict, which is exactly how draft
+models flatter themselves.
+
+**Corrected October 19, 2026.** The name join used to drop college
+draftees without a word. An audit found the dropped players; two whose
+records were complete are back in the sample, the rest are listed with a
+reason, and a gate now fails on any other. Every figure on this page moved
+by a few thousandths at most, and the conclusion did not change.
 
 <div class="eyebrow beat">The result</div>
 
-## The college numbers add +0.000
+## The college numbers add 0.000
 
 The result: a model using only the pick predicts rotation outcomes at
-0.827 AUC out of sample. Add fifteen college box-score features (scoring,
+0.829 AUC out of sample. Add fifteen college box-score features (scoring,
 rebounding, usage, stocks, age, height, the works) and the test AUC moves
-to 0.827. **The college numbers add +0.000.** In-sample they help (0.844 →
-0.861), which is precisely the trap: a random-split evaluation would have
+to 0.829. **The college numbers add 0.000.** In-sample they help (0.844 →
+0.862), which is precisely the trap: a random-split evaluation would have
 reported that in-sample flattery as skill. Out of era, the scouts' consensus
 already contains everything the box score knows.
 

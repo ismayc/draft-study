@@ -17,5 +17,9 @@ echo "=== reconciliation / validation ==="
 $PY python/03_reconcile.py | tail -1
 
 echo
+echo "=== college-to-draft name join: unmatched draftees must be allowlisted ==="
+$PY python/05_join_gate.py
+
+echo
 echo "=== findings: README Findings regenerate from outputs ==="
 $PY python/04_findings.py --check | tail -1

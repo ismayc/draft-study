@@ -15,14 +15,14 @@ model is going to beat the board, it needs inputs the board hasn't seen
 
 ## For analytics peers
 
-n=567 drafted college players, classes 2011-2022 (Torvik advanced stats;
+n=569 drafted college players, classes 2011-2022 (Torvik advanced stats;
 outcome ≥2,000 NBA minutes in three seasons via DraftHistory PERSON_ID join
 to LeagueDash totals: the only name matching is Torvik↔DraftHistory, gated
-at 98%+ with a hand-audited alias table). Logistic M0 (log pick) vs M1
+at 98%+ with a committed alias table and an allowlist, `python/05_join_gate.py`). Logistic M0 (log pick) vs M1
 (+15 college features), same hand-rolled IRLS as the shot-quality study,
 independently implemented in R and Python, reconciling at ~1e-13. Era
-holdout (train 2011-2018, test 2019-2022): M1 gains +0.017 AUC in-sample
-and +0.000 out-of-sample with worse log-loss: clean overfit, reported as
+holdout (train 2011-2018, test 2019-2022): M1 gains +0.018 AUC in-sample
+and 0.000 out-of-sample with worse log-loss: clean overfit, reported as
 the finding rather than hidden behind the train table. Random CV would have
 flattered M1; the time split is the honest design. Limitations stated:
 blunt outcome, college-only frame, n too small to close the question.
