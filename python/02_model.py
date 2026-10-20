@@ -315,8 +315,14 @@ def main() -> int:
     f = go.Figure()
     f.add_trace(go.Scatter(x=picks, y=curve, mode="lines",
                            name="P(rotation) from pick alone"))
-    f.update_layout(title="What a draft slot is worth: P(2,000+ min in 3 "
-                    "seasons) by pick (2011-2018 fit)",
+    # Mark the point the story reads off the curve: where it reaches a coin flip.
+    cf = int(picks[gap.argmin()])
+    f.add_hline(y=0.5, line=dict(color="#898781", width=1, dash="dash"))
+    f.add_annotation(x=cf, y=0.5, text=f"coin flip at pick {cf}", showarrow=False,
+                     xanchor="left", yanchor="bottom", xshift=6, yshift=4)
+    f.update_layout(title=f"Rotation odds fall steeply from the top pick and reach a "
+                    f"coin flip at pick {cf}<br><sup>P(2,000+ NBA minutes in 3 "
+                    "seasons) by pick, pick-only model fit on 2011-2018</sup>",
                     xaxis_title="overall pick", yaxis_title="P(rotation)",
                     template="plotly_white")
     f.write_html(FIG / "fig1_pick_curve_py.html", include_plotlyjs="cdn")

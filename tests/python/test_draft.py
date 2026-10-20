@@ -73,3 +73,29 @@ def test_recovered_draftees_are_in_the_join(draft):
 def draft_gate():
     from conftest import load_script
     return load_script("python/05_join_gate.py", "draft_join_gate")
+
+
+def test_pair_count_reproduces_pick_only_test_auc(draft):
+    # dg2_pair_auc draws the test AUC as a count over (rotation, no rotation)
+    # pairs; that count must equal the reconciled metric, not approximate it.
+    import polars as pl
+    from conftest import load_script
+    dg = load_script("python/06_diagrams.py", "draft_diagrams")
+    pc = dg.pair_counts(pl.read_csv(dg.OUT / "model_frame.csv"))
+    met = pl.read_csv(dg.OUT / "metrics.csv")
+    pub = met.filter(pl.col("model") == "pick_only")["test_auc"][0]
+    assert pc["right"] + pc["tied"] + pc["wrong"] == pc["pairs"]
+    assert abs(pc["auc"] - pub) < 1e-12
+
+
+def test_pair_counts_on_a_tiny_frame(draft):
+    import polars as pl
+    from conftest import load_script
+    dg = load_script("python/06_diagrams.py", "draft_diagrams")
+    yr = dg.M.TEST_YEARS.start
+    frame = pl.DataFrame({"SEASON": [yr] * 4, "OVERALL_PICK": [1, 5, 5, 9],
+                          "rotation": [1, 1, 0, 0]})
+    pc = dg.pair_counts(frame)
+    # made {1, 5} x missed {5, 9}: 1<5, 1<9, 5=5 (tie), 5<9
+    assert (pc["pairs"], pc["right"], pc["tied"], pc["wrong"]) == (4, 3, 1, 0)
+    assert pc["auc"] == (3 + 0.5) / 4

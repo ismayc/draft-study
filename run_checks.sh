@@ -23,3 +23,7 @@ $PY python/05_join_gate.py
 echo
 echo "=== findings: README Findings regenerate from outputs ==="
 $PY python/04_findings.py --check | tail -1
+
+echo
+echo "=== diagrams: every explainer SVG rebuilds identically from committed tables ==="
+$PY python/06_diagrams.py --check | tail -1

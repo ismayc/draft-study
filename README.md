@@ -54,6 +54,7 @@ R/02_model.R             independent R/tidyverse implementation (full rebuild)
 python/03_reconcile.py   R vs Python to 1e-6 (observed ~1e-13), non-zero exit
 python/04_findings.py    regenerates the Findings section below
 python/05_join_gate.py   fails on any unmatched, un-allowlisted college draftee
+python/06_diagrams.py    draws the story page's explainer diagrams from output/ (--check rebuilds and compares)
 ```
 
 Validation gates (`output/validation.csv`): draft-year inference agrees

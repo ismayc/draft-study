@@ -37,6 +37,8 @@ within three seasons). And the holdout is **by era** (train on the
 model peek at the era it claims to predict, which is exactly how draft
 models flatter themselves.
 
+{{svg:dg1_era_holdout|The era holdout. Each dot is one drafted college player in his draft class, blue if he reached a rotation. The model is fit only on the upper block of classes and scored only on the shaded block, which it never sees while fitting, so its score measures how well it ranks drafts it has not seen.}}
+
 **Corrected October 19, 2026.** The name join used to drop college
 draftees without a word. An audit found the dropped players; two whose
 records were complete are back in the sample, the rest are listed with a
@@ -48,12 +50,19 @@ by a few thousandths at most, and the conclusion did not change.
 ## The college numbers add 0.000
 
 The result: a model using only the pick predicts rotation outcomes at
-0.829 AUC out of sample. Add fifteen college box-score features (scoring,
+0.829 AUC out of sample. AUC is easiest to read as a count over pairs of
+players, drawn below on the held-out classes.
+
+{{svg:dg2_pair_auc|What the test AUC counts. Every held-out player who reached a rotation is paired with every one who did not, and a pair counts as right when the earlier pick is the one who made it. The pick-only model ranks players by pick, so this count reproduces its test AUC exactly, and the scouts' order gets most pairs right.}}
+
+Add fifteen college box-score features (scoring,
 rebounding, usage, stocks, age, height, the works) and the test AUC moves
 to 0.829. **The college numbers add 0.000.** In-sample they help (0.844 →
 0.862), which is precisely the trap: a random-split evaluation would have
 reported that in-sample flattery as skill. Out of era, the scouts' consensus
 already contains everything the box score knows.
+
+{{svg:dg3_in_sample|The in-sample trap. Scored on the classes it was fit on, the model with college features looks better than the pick alone; scored on the held-out classes, the two land in the same place. The gain on the left is what a random-split evaluation would have reported as skill.}}
 
 <div class="eyebrow beat">The byproduct</div>
 
@@ -66,7 +75,7 @@ byproduct, though, is genuinely useful, because modeling P(rotation) as a
 function of the pick produces the empirical pick-value curve every trade
 conversation needs.
 
-{{fig:fig1_pick_curve_py|P(NBA rotation player within three seasons) by draft pick: the study's one essential figure. It converts a negative modeling result into a usable asset-valuation tool: the curve is steep at the top, crosses a coin flip around pick 28, and flattens into the second round. When a trade offer bundles picks, this curve is the exchange rate; hover any pick for its empirical rate and sample size.}}
+{{fig:fig1_pick_curve_py|P(NBA rotation player within three seasons) by draft pick: the study's one essential figure. It converts a negative modeling result into a usable asset-valuation tool: the curve is steep at the top, crosses a coin flip around pick 28, and flattens into the second round. When a trade offer bundles picks, this curve is the exchange rate; hover any pick for its modeled probability.}}
 
 <div class="eyebrow beat">Reading the curve</div>
 
